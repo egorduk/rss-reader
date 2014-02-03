@@ -1,4 +1,4 @@
-1UPGRADE FROM 2.1 to 2.2
+UPGRADE FROM 2.1 to 2.2
 =======================
 
  * The [`web/.htaccess`](https://github.com/symfony/symfony-standard/blob/2.2/web/.htaccess)
