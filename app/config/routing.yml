@@ -1,0 +1,3 @@
+one:
+    pattern:   /test/1
+    defaults:  { _controller: AcmeTestBundle:Test:index }
