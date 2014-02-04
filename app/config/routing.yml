@@ -1,3 +1,11 @@
-one:
-    pattern:   /test/1
-    defaults:  { _controller: AcmeTestBundle:Test:index }
+read:
+    pattern:   /read/
+    defaults:  { _controller: AcmeTestBundle:Rss:index }
+
+setting:
+    pattern:   /setting/
+    defaults:  { _controller: AcmeTestBundle:Rss:setting }
+
+actionForm:
+    pattern:   /setting/
+    defaults:  { _controller: AcmeTestBundle:Rss:setting }
