@@ -27,6 +27,13 @@ class Source
      */
     protected $url;
 
+    /*public function __construct($name,$url)
+    {
+        $this->name = $name;
+        $this->url = $url;
+    }*/
+
+
     public function setId($id)
     {
         $this->id = $id;

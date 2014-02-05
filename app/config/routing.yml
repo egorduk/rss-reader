@@ -2,10 +2,19 @@ read:
     pattern:   /read/
     defaults:  { _controller: AcmeTestBundle:Rss:index }
 
-setting:
-    pattern:   /setting/
-    defaults:  { _controller: AcmeTestBundle:Rss:setting }
+setting_add:
+    pattern:   /setting/add
+    defaults:  { _controller: AcmeTestBundle:Rss:add }
+
+setting_view:
+    pattern:   /setting/view
+    defaults:  { _controller: AcmeTestBundle:Rss:view }
+
+setting_edit:
+    pattern:   /setting/edit
+    defaults:  { _controller: AcmeTestBundle:Rss:edit }
 
 actionForm:
     pattern:   /setting/
     defaults:  { _controller: AcmeTestBundle:Rss:setting }
+

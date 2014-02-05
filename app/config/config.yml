@@ -44,7 +44,6 @@ assetic:
     assets:
             jquery_and_script:
                 inputs:
-                    - '@AcmeTestBundle/Resources/public/js/script.js'
 
 
 

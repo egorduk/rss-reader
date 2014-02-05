@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    $("#controlForm_sourceId").change(function()
+    /*$("#controlForm_sourceId").change(function()
     {
         var id = $(this).select().val();
 
@@ -27,17 +27,55 @@ $(document).ready(function(){
             $("#controlForm_fieldName").val("");
             $("#controlForm_fieldUrl").val("");
         }
-    });
+    });*/
 
-    $("#btnView").click(function()
+
+    $("#viewForm_Save").click(function()
     {
-        var arrInd = new Array();
+        var arrSaveInd = [];
+        var url = $("#form").attr("action");
 
-        $(':checkbox').filter(':checked').each(function() {
-            //alert($(this).attr("ind"));
-            arrInd.push($(this).attr("ind"));
+        $(".checkSave").filter(':checked').each(function() {
+            arrSaveInd.push($(this).attr("value"));
         });
 
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: url,
+            data: "arrSaveInd=" + $.toJSON(arrSaveInd),
+            success: function(response)
+            {
+                //window.location.href = $(location).attr('href');
+            }
+        })
     });
+
+
+
+    $("#viewForm_Delete").click(function()
+    {
+        var arrDeleteInd = [];
+        var url = $("#form").attr("action");
+
+        $(".checkDelete").filter(':checked').each(function() {
+            arrDeleteInd.push($(this).attr("value"));
+        });
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: url,
+            data: "arrDeleteInd=" + $.toJSON(arrDeleteInd),
+            success: function(response)
+            {
+                window.location.href = $(location).attr('href');
+            }
+        })
+
+
+    });
+
+
 
 })
