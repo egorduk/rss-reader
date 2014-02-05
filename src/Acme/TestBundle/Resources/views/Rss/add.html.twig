@@ -1,0 +1,14 @@
+{% extends "AcmeTestBundle::layout.html.twig" %}
+
+{% block title "Rss reader" %}
+
+{% block content_header '' %}
+
+{% block content %}
+    <h1 class="title">Rss settings/Add</h1>
+    <div id="block-form">
+        <form action="{{ path('setting_add') }}" method="post" id="form">
+            {{ form_widget(formAdd) }}
+        </form>
+    </div>
+{% endblock %}
