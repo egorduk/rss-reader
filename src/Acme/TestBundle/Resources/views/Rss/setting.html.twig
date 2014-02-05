@@ -1,0 +1,41 @@
+{% extends "AcmeTestBundle::layout.html.twig" %}
+
+{% block title "Rss reader" %}
+
+{% block content_header '' %}
+
+{% block content %}
+    <h1 class="title">Rss settings</h1>
+    <div id="block-form">
+        <form action="{{ path('actionForm') }}" method="post" id="form">
+            {{ form_widget(form) }}
+        </form>
+    </div>
+    <div id="block-table">
+        <table border="3" width="100%">
+            <thead>
+                <th>Название</th>
+                <th>URL</th>
+                <th>Выбор</th>
+            </thead>
+            <tbody>
+                {% for i in 0..count-1 %}
+                    <tr>
+                        <td>
+                            {{ sources[i].name }}
+                        </td>
+                        <td>
+                            {{ sources[i].url }}
+                        </td>
+                        <td>
+                            <input type="checkbox" name="arrCheck[]" ind={{ sources[i].id }}>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <input type="button" value="View" id="btnView">
+    </div>
+{% endblock %}

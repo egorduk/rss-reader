@@ -1,0 +1,12 @@
+{% extends "AcmeTestBundle::layout.html.twig" %}
+
+{% block title "Rss reader" %}
+
+{% block content_header '' %}
+
+{% block content %}
+    <h1 class="title">Rss reader</h1>
+    <ul id="demo-list">
+        <li>{{ html|raw }}</li>
+    </ul>
+{% endblock %}
