@@ -17,7 +17,7 @@ class ViewForm extends AbstractType
 
         $builder->add('Delete', 'button', array(
                 'attr' => array('class' => 'symfony-button-grey')))
-                ->add('Save', 'submit', array(
+                ->add('Save', 'button', array(
                     'attr' => array('class' => 'symfony-button-grey')));
     }
 

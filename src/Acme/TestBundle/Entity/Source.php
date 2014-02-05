@@ -27,6 +27,11 @@ class Source
      */
     protected $url;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $active;
+
     /*public function __construct($name,$url)
     {
         $this->name = $name;
@@ -49,6 +54,11 @@ class Source
         $this->url = $url;
     }
 
+    public function setActive($active)
+    {
+        $this->active = $active;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -62,5 +72,10 @@ class Source
     public function getUrl()
     {
         return $this->url;
+    }
+
+    public function getActive()
+    {
+        return $this->active;
     }
 }

@@ -146,7 +146,7 @@ class RssController extends Controller
 
             $arrDeleteInd = (array)json_decode($request->request->get('arrDeleteInd'));
 
-            if (isset($arrDeleteInd))
+            if (count($arrDeleteInd))
             {
                 foreach($arrDeleteInd as $deleteId)
                 {
@@ -154,22 +154,64 @@ class RssController extends Controller
                         ->find($deleteId);
 
                     $em->remove($source);
-                    $em->flush();
                 }
 
-                $response = new Response(json_encode(array('arr' => count($arrDeleteInd))));
+                $em->flush();
+
+                $response = new Response();
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
+
+            $arrSaveInd = (array)json_decode($request->request->get('arrSaveInd'));
+
+            if (count($arrSaveInd))
+            {
+                foreach($arrSaveInd as $saveId)
+                {
+                    $source = $em->getRepository('AcmeTestBundle:Source')
+                        ->find($saveId);
+
+                    $source->setActive(1);
+
+                    $em->persist($source);
+                }
+
+                $em->flush();
+
+                $response = new Response();
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+
+            $loadActive = $request->request->get('loadActive');
+
+            if (isset($loadActive))
+            {
+                $sources = $em->getRepository('AcmeTestBundle:Source')
+                    ->findByActive(1);
+
+                $arrLoadActive = array();
+
+                foreach($sources as $source)
+                {
+                    $arrLoadActive[] = $source->getId();
+                }
+
+                $response = new Response(json_encode(array('arrLoadActive' => $arrLoadActive)));
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+
         }
 
         $formView = $this->createForm(new ViewForm());
         $formView->handleRequest($request);
 
-        if ($request->isMethod('POST'))
+        /*if ($request->isMethod('POST'))
         {
 
-        }
+        }*/
 
         $sources = $em->getRepository('AcmeTestBundle:Source')
             ->findAll();
