@@ -24,6 +24,10 @@ framework:
     fragments:       ~
     http_method_override: true
 
+services:
+    cache:
+        class: Doctrine\Common\Cache\ApcCache
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
@@ -65,6 +69,10 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+        metadata_cache_driver: apc
+        result_cache_driver: apc
+        query_cache_driver: apc
+
 
 # Swiftmailer Configuration
 swiftmailer:

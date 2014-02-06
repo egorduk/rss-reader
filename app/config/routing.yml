@@ -1,6 +1,6 @@
 read:
     pattern:   /read/
-    defaults:  { _controller: AcmeTestBundle:Rss:index }
+    defaults:  { _controller: AcmeTestBundle:Rss:read }
 
 setting_add:
     pattern:   /setting/add
@@ -14,7 +14,4 @@ setting_edit:
     pattern:   /setting/edit
     defaults:  { _controller: AcmeTestBundle:Rss:edit }
 
-actionForm:
-    pattern:   /setting/
-    defaults:  { _controller: AcmeTestBundle:Rss:setting }
 

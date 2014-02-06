@@ -2,6 +2,9 @@
 
 namespace Acme\TestBundle\Helper;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+
 class Rss {
 	
 	public $document;
@@ -13,10 +16,23 @@ class Rss {
 ***/
 	# load RSS by URL
 		public function load($url=false, $unblock=true) {
-			if($url) {
-				if($unblock) {
-					$this->loadParser(file_get_contents($url, false, $this->randomContext()));
-				} else {
+			if($url)
+            {
+				if($unblock)
+                {
+                    $status = @file_get_contents($url);
+
+                    if (!$status)
+                    {
+                        throw new NotFoundHttpException("Error reading rss from url " . $url);
+                    }
+                    else
+                    {
+                        $this->loadParser(file_get_contents($url, false, $this->randomContext()));
+                    }
+				}
+                else
+                {
 					$this->loadParser(file_get_contents($url));
 				}
 			}

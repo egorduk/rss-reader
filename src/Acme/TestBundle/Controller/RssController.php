@@ -14,11 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Acme\TestBundle\Helper\Rss;
 use Doctrine\ORM\QueryBuilder;
 use Acme\TestBundle\Entity\Source;
+use Doctrine\ORM\Query;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Doctrine\Common\Cache\ApcCache;
 
 
 // these import the "@Route" and "@Template" annotations
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+
 
 class RssController extends Controller
 {
@@ -28,22 +32,65 @@ class RssController extends Controller
      */
     public function indexAction()
     {
-        $res = $this->getDoctrine()
-            ->getRepository('AcmeTestBundle:Source')
-            ->findOneById(1);
+    }
 
-        $rss = new Rss();
-        $rss->load($res->getUrl());
-        $items = $rss->getItems();
+
+    /**
+     * @Template()
+     * @Cache(expires="tomorrow", public="true", maxage="600")
+     */
+    public function readAction()
+    {
+        //error_log($kernel->getLog());
 
         $html = '';
+        $rss = new Rss();
+        $items = array();
+        $names = array();
 
-        foreach($items as $index => $item)
+        $cacheDriver = new ApcCache();
+
+        $sources = $this->getDoctrine()
+            ->getRepository('AcmeTestBundle:Source')
+            ->findByActive(1);
+
+        if ($cacheDriver->contains('data'))
         {
-            $html .= '<p><strong>'.$item['title'].'</strong><br/>'.$item['description'].'<br/></p>';
+            //return $cacheDriver->fetch('data');
+            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('html' => $cacheDriver->fetch('data')));
+            return $response;
+        }
+        else
+        {
+            if (count($sources))
+            {
+                foreach($sources as $source)
+                {
+                    $rss->load($source->getUrl());
+                    $items[] = $rss->getItems();
+                    $names[] = $source->getName();
+                }
+            }
+
+            foreach($items as $index=>$item)
+            {
+                $html .= '=======================================';
+                $html .= '<br/><h2>' . $names[$index] . '</h2><br/>';
+                $html .= '=======================================';
+
+                foreach($item as $news)
+                {
+                    $html .= '<p><strong>'.$news['title'].'</strong><br/>'.$news['description'].'<br/></p>';
+                }
+            }
+
+            $cacheDriver->save('data', $html, "900");
+
+            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('html' => $html));
+            return $response;
         }
 
-        return array('html' => $html);
+
     }
 
 
@@ -165,15 +212,47 @@ class RssController extends Controller
 
             $arrSaveInd = (array)json_decode($request->request->get('arrSaveInd'));
 
-            if (count($arrSaveInd))
+            if (count($arrSaveInd) && ($arrSaveInd[0] != -1))
             {
+                $sources = $em->getRepository('AcmeTestBundle:Source')
+                    ->findAll();
+
+                foreach($sources as $source)
+                {
+                    $source->setActive(0);
+                    $em->persist($source);
+                }
+
+                $em->flush();
+
                 foreach($arrSaveInd as $saveId)
                 {
-                    $source = $em->getRepository('AcmeTestBundle:Source')
-                        ->find($saveId);
+                    foreach($sources as $source)
+                    {
+                        if ($source->getId() == $saveId)
+                        {
+                            $source->setActive(1);
+                            $em->persist($source);
 
-                    $source->setActive(1);
+                            break;
+                        }
+                    }
+                }
 
+                $em->flush();
+
+                $response = new Response();
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+            else if (count($arrSaveInd) && ($arrSaveInd[0] == -1))
+            {
+                $sources = $em->getRepository('AcmeTestBundle:Source')
+                    ->findAll();
+
+                foreach($sources as $source)
+                {
+                    $source->setActive(0);
                     $em->persist($source);
                 }
 

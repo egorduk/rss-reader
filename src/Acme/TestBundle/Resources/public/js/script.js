@@ -10,9 +10,7 @@ $(document).ready(function(){
         success: function(response)
         {
             $.each(response.arrLoadActive, function(i,ind) {
-                //alert(val);
                 $(".checkSave").each(function() {
-                    //arrSaveInd.push($(this).attr("value"));
                     if ($(this).attr("value") == ind)
                     {
                         $(this).attr('checked','checked');
@@ -56,11 +54,15 @@ $(document).ready(function(){
     $("#viewForm_Save").click(function()
     {
         var arrSaveInd = [];
-        var url = $("#form").attr("action");
 
         $(".checkSave").filter(':checked').each(function() {
             arrSaveInd.push($(this).attr("value"));
         });
+
+        if (!arrSaveInd.length)
+        {
+            arrSaveInd = -1;
+        }
 
         $.ajax({
             type: "POST",
@@ -78,7 +80,6 @@ $(document).ready(function(){
     $("#viewForm_Delete").click(function()
     {
         var arrDeleteInd = [];
-        var url = $("#form").attr("action");
 
         $(".checkDelete").filter(':checked').each(function() {
             arrDeleteInd.push($(this).attr("value"));

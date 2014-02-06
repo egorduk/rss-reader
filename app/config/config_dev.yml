@@ -34,3 +34,10 @@ assetic:
 
 #swiftmailer:
 #    delivery_address: me@example.com
+
+doctrine:
+    orm:
+        auto_mapping: true
+        query_cache_driver:    apc
+        metadata_cache_driver: apc
+        result_cache_driver: apc
