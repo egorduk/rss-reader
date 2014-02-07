@@ -2,6 +2,7 @@ $(document).ready(function(){
 
     var url = $("#form").attr("action");
 
+    // Loads the active state of checkbox after loading page
     $.ajax({
         type: "POST",
         dataType: 'json',
@@ -21,36 +22,9 @@ $(document).ready(function(){
     })
 
 
-    /*$("#controlForm_sourceId").change(function()
-    {
-        var id = $(this).select().val();
-
-        if (id != '')
-        {
-            var url = $("#form").attr("action");
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: "editId=" + id,
-                success: function(response)
-                {
-                    if (response != null)
-                    {
-                        $("#controlForm_fieldName").val(response.name);
-                        $("#controlForm_fieldUrl").val(response.url);
-                    }
-                }
-            })
-        }
-        else
-        {
-            $("#controlForm_fieldName").val("");
-            $("#controlForm_fieldUrl").val("");
-        }
-    });*/
-
-
+    /**
+     * Saves checked sources for wiew in future
+     */
     $("#viewForm_Save").click(function()
     {
         var arrSaveInd = [];
@@ -77,6 +51,9 @@ $(document).ready(function(){
     });
 
 
+    /**
+     * Deletes checked sources
+     */
     $("#viewForm_Delete").click(function()
     {
         var arrDeleteInd = [];
@@ -95,10 +72,6 @@ $(document).ready(function(){
                 window.location.href = $(location).attr('href');
             }
         })
-
-
     });
-
-
 
 })

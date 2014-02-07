@@ -14,7 +14,7 @@ class AddForm extends AbstractType
         $builder->add('fieldName', 'text', array('label'=>'Name:', 'required' => true, 'attr' => array('size' => 30)))
                 ->add('fieldUrl', 'text', array('label'=>'Url:', 'required' => true, 'attr' => array('size' => 50)))
                 ->add('Add', 'submit', array(
-                'attr' => array('class' => 'symfony-button-grey')));
+                'attr' => array('class' => 'btn btn-success')));
     }
 
     public function getName()

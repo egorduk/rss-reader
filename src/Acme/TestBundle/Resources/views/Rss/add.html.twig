@@ -2,13 +2,25 @@
 
 {% block title "Rss reader" %}
 
-{% block content_header '' %}
-
 {% block content %}
-    <h1 class="title">Rss settings/Add</h1>
-    <div id="block-form">
-        <form action="{{ path('setting_add') }}" method="post" id="form">
-            {{ form_widget(formAdd) }}
-        </form>
+    <div class="container">
+        <div class="row">
+            <div class="navbar navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <ul class="nav">
+                            <li><a href="{{ path('setting_view') }}">View</a></li>
+                            <li class="active"><a href="{{ path('setting_add') }}">Add</a></li>
+                            <li><a href="{{ path('read') }}">Read</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="span6 centred" id="block-add">
+                <form action="{{ path('setting_add') }}" method="post" id="form">
+                    {{ form_widget(formAdd) }}
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}

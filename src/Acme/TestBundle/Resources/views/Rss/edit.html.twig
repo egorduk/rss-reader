@@ -5,10 +5,24 @@
 {% block content_header '' %}
 
 {% block content %}
-    <h1 class="title">Rss settings/Edit</h1>
-    <div id="block-form">
-        <form action="{{ path('setting_edit') }}" method="post">
-            {{ form_widget(formEdit) }}
-        </form>
+    <div class="container">
+        <div class="row">
+            <div class="navbar navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <ul class="nav">
+                            <li><a href="{{ path('setting_view') }}">View</a></li>
+                            <li><a href="{{ path('setting_add') }}">Add</a></li>
+                            <li><a href="{{ path('read') }}">Read</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="span6 centred" id="block-edit">
+                <form action="{{ path('setting_edit') }}" method="post">
+                    {{ form_widget(formEdit) }}
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}

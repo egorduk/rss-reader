@@ -6,7 +6,6 @@ use Acme\TestBundle\Form\AddForm;
 use Acme\TestBundle\Form\ViewForm;
 use Acme\TestBundle\Form\EditForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-//use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Finder\Iterator\SortableIterator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,13 +36,12 @@ class RssController extends Controller
 
     /**
      * @Template()
-     * @Cache(expires="tomorrow", public="true", maxage="600")
+     *
+     * Read rss from active sources, save data in cache, create tag cloud with viewing limit 70 tags
      */
     public function readAction()
     {
-        //error_log($kernel->getLog());
-
-        $html = '';
+        $text = '';
         $rss = new Rss();
         $items = array();
         $names = array();
@@ -54,10 +52,11 @@ class RssController extends Controller
             ->getRepository('AcmeTestBundle:Source')
             ->findByActive(1);
 
-        if ($cacheDriver->contains('data'))
+        if ($cacheDriver->contains('text'))
         {
-            //return $cacheDriver->fetch('data');
-            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('html' => $cacheDriver->fetch('data')));
+            $textFromCache = $cacheDriver->fetch('text');
+            $cloudFromCache = $cacheDriver->fetch('cloud');
+            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('text' => $textFromCache, 'cloud' => $cloudFromCache));
             return $response;
         }
         else
@@ -72,30 +71,74 @@ class RssController extends Controller
                 }
             }
 
+            $clearStr = '';
+
             foreach($items as $index=>$item)
             {
-                $html .= '=======================================';
-                $html .= '<br/><h2>' . $names[$index] . '</h2><br/>';
-                $html .= '=======================================';
+                $text .= '<br/><h2><span id="feedName">' . $names[$index] . '</span></h2><br/>';
 
                 foreach($item as $news)
                 {
-                    $html .= '<p><strong>'.$news['title'].'</strong><br/>'.$news['description'].'<br/></p>';
+                    $text .= '<strong>'.$news['title'].'</strong><br/>'.$news['description'].'<br/>';
+
+                    $str = preg_replace("/[[:punct:]^]/", "", $news['title']);
+                    $str = preg_replace("/[[:digit:]^]/", "", $str);
+                    $str = str_replace(array(' in ', ' the ', ' a ', ' and ', ' or ', ' on ', ' no ', ' not ', ' of ', ' at ' , ' an ', ' to ', ' by '), ' ', $str);
+                    $clearStr .= $str . ' ';
                 }
             }
 
-            $cacheDriver->save('data', $html, "900");
+            $arr = array();
+            $arr = explode(" ", $clearStr);
+            $arrWord = array();
+            $arrWord = array_count_values($arr);
+            $cloud = '';
+            $countLowWorld = 0;
 
-            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('html' => $html));
+            foreach($arrWord as $index=>$a)
+            {
+                if ($a > 5)
+                {
+                    $size = 20;
+                }
+                else if($a > 10)
+                {
+                    $size = 30;
+                }
+                else if($a > 15)
+                {
+                    $size = 40;
+                }
+                else
+                {
+                    $size = 10;
+
+                    if ($countLowWorld > 70)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        $countLowWorld++;
+                    }
+                }
+
+                $cloud .= "<span style='font-size: ".$size."pt'>" . $index . "</span> ";
+            }
+
+            $cacheDriver->save('text', $text, "120");
+            $cacheDriver->save('cloud', $cloud, "120");
+
+            $response = $this->render('AcmeTestBundle:Rss:read.html.twig', array('text' => $text, 'cloud' => $cloud));
             return $response;
         }
-
-
     }
 
 
     /**
      * @Template()
+     *
+     * Add new source
      */
     public function addAction(Request $request)
     {
@@ -113,6 +156,7 @@ class RssController extends Controller
                 $source = new Source();
                 $source->setName($newName);
                 $source->setUrl($newUrl);
+                $source->setActive(0);
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($source);
@@ -128,6 +172,8 @@ class RssController extends Controller
 
     /**
      * @Template()
+     *
+     * Edit selected source
      */
     public function editAction(Request $request)
     {
@@ -161,6 +207,7 @@ class RssController extends Controller
                     ->find($editId);
                 $source->setName($editName);
                 $source->setUrl($editUrl);
+                $source->setActive(0);
 
                 $em->persist($source);
                 $em->flush();
@@ -173,6 +220,8 @@ class RssController extends Controller
 
     /**
      * @Template()
+     *
+     * View all sources with edit/delete functions
      */
     public function viewAction(Request $request)
     {
@@ -286,11 +335,6 @@ class RssController extends Controller
 
         $formView = $this->createForm(new ViewForm());
         $formView->handleRequest($request);
-
-        /*if ($request->isMethod('POST'))
-        {
-
-        }*/
 
         $sources = $em->getRepository('AcmeTestBundle:Source')
             ->findAll();

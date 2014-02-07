@@ -15,7 +15,7 @@ class EditForm extends AbstractType
                 ->add('fieldUrl', 'text', array('label'=>'Url:', 'required' => true, 'attr' => array('size' => 50), 'data' => $options['data']['url']))
                 ->add('fieldSourceId', 'hidden', array('data' => $options['data']['sourceId']))
                 ->add('Edit', 'submit', array(
-                'attr' => array('class' => 'symfony-button-grey')));
+                'attr' => array('class' => 'btn btn-success')));
     }
 
     public function getName()

@@ -99,3 +99,39 @@ ul#demo-list a {
     white-space: pre;
     font-family: monospace;
 }
+
+.table{
+    height: auto;
+}
+
+.table thead{
+    font-weight: bold;
+}
+
+.table td {
+    text-align: center;
+}
+
+[class*="span"].centred {
+    margin-left: auto;
+    margin-right: auto;
+    float: none;
+}
+
+#feedName{
+    text-align: center;
+    font-size: 30px;
+}
+
+#rowNews{
+    padding-right: 10px;
+    margin-right:  10px;
+}
+
+#cloudTags{
+    padding-top: 40px;
+}
+
+#block-table, #block-button, #block-edit, #block-add{
+    padding-top: 80px;
+}
