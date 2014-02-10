@@ -1,17 +1,17 @@
 read:
     pattern:   /read/
-    defaults:  { _controller: AcmeTestBundle:Rss:read }
+    defaults:  { _controller: AcmeRssBundle:Rss:read }
 
 setting_add:
     pattern:   /setting/add
-    defaults:  { _controller: AcmeTestBundle:Rss:add }
+    defaults:  { _controller: AcmeRssBundle:Rss:add }
 
 setting_view:
     pattern:   /setting/view
-    defaults:  { _controller: AcmeTestBundle:Rss:view }
+    defaults:  { _controller: AcmeRssBundle:Rss:view }
 
 setting_edit:
     pattern:   /setting/edit
-    defaults:  { _controller: AcmeTestBundle:Rss:edit }
+    defaults:  { _controller: AcmeRssBundle:Rss:edit }
 
 

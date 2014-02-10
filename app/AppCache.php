@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache;
 
 class AppCache extends HttpCache
 {
-    protected function getOptions()
+    /*protected function getOptions()
     {
         return array(
             'debug'                  => true,
@@ -39,5 +39,5 @@ class AppCache extends HttpCache
         }
 
         return $response;
-    }
+    }*/
 }

@@ -37,7 +37,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ AcmeTestBundle ]
+    bundles:        [ AcmeRssBundle ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
@@ -69,9 +69,9 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
-        metadata_cache_driver: apc
-        result_cache_driver: apc
-        query_cache_driver: apc
+        #metadata_cache_driver: apc
+        #result_cache_driver: apc
+        #query_cache_driver: apc
 
 
 # Swiftmailer Configuration
