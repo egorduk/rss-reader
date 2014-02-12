@@ -4,12 +4,25 @@ namespace Acme\RssBundle\Helper;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-
+/**
+ * Class for filtering and building cloud tags from input string
+ * @author Egor Dyukarev <edyukarev@itransition.com>
+ */
 class Cloud {
 
+    /**
+     * The counter for output tags in cloud
+     * @var int
+     * @access protected
+     */
     protected $countFilterWord = 0;
 
-	public function filterStr($str)
+    /**
+     * A function to filtering the string
+     * @param string $str the original string with unions and etc
+     * @return string
+     */
+    public function filterStr($str)
     {
         $arrayDeleteWord = array(' in ',
             ' the ',
@@ -41,9 +54,13 @@ class Cloud {
             ' for ',
             ' up ',
             '$',
-            ' it ');
+            ' it ',
+            '&',
+            'be',
+            'the ',
+            ' his ');
 
-        $arrayDeletePunct = array(' - ', ',', '.', ':', ' -- ', ' ... ', '!', ';');
+        $arrayDeletePunct = array(' - ', ',', '.', ':', ' -- ', ' ... ', '!', ';', '?');
 
         //$str = preg_replace("/[[:punct:]]/", " ", $str);
         $str = preg_replace("/[[:digit:]^]/", " ", $str);
@@ -54,6 +71,11 @@ class Cloud {
         return $str;
     }
 
+    /**
+     * A function for building the tags cloud
+     * @param string $str the clear string without punctuation
+     * @return string
+     */
     public function buildCloud($str)
     {
         $arrayBuff = explode(" ", $str);

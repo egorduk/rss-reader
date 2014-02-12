@@ -12,34 +12,34 @@ use Symfony\Component\Finder\Iterator\SortableIterator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Acme\RssBundle\Helper\Rss;
-use Doctrine\ORM\QueryBuilder;
 use Acme\RssBundle\Entity\Source;
 use Acme\RssBundle\Entity\News;
 use Doctrine\ORM\Query;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Acme\RssBundle\Helper\Cloud;
-
-
-// these import the "@Route" and "@Template" annotations
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-
+/**
+ * Class for all bundles controllers
+ * @author Egor Dyukarev <edyukarev@itransition.com>
+ */
 class RssController extends Controller
 {
 
     /**
-     * @Template()
+     * param string $tableSource the table Source
+     * param string $tableNews the table News
+     * @var string
+     * @access private
      */
-    public function indexAction()
-    {
-    }
-
+    private $tableSource = 'AcmeRssBundle:Source';
+    private $tableNews = 'AcmeRssBundle:News';
 
     /**
      * @Template()
-     *
-     * Read rss from active sources, save data in cache, create tag cloud with viewing limit 70 tags
+     * A function for reading rss news from active sources, saving data in cache, creating tag cloud with limit 80 tags
+     * @return Response
      */
     public function readAction()
     {
@@ -49,7 +49,7 @@ class RssController extends Controller
         $names = array();
 
         $sources = $this->getDoctrine()
-            ->getRepository('AcmeRssBundle:Source')
+            ->getRepository($this->tableSource)
             ->findByActive(1);
 
         if (count($sources))
@@ -102,6 +102,8 @@ class RssController extends Controller
 
     /**
      * @Template()
+     * A function for viewing rss news as title-link
+     * @return array
      */
     public function shortAction()
     {
@@ -111,7 +113,7 @@ class RssController extends Controller
         $names = array();
 
         $sources = $this->getDoctrine()
-            ->getRepository('AcmeRssBundle:Source')
+            ->getRepository($this->tableSource)
             ->findByActive(1);
 
         if (count($sources))
@@ -132,7 +134,7 @@ class RssController extends Controller
         $platform = $connection->getDatabasePlatform();
         $connection->executeUpdate($platform->getTruncateTableSQL('News', true));
 
-        $i = 1;
+        $id = 1;
 
         foreach($items as $index=>$item)
         {
@@ -140,7 +142,7 @@ class RssController extends Controller
 
             foreach($item as $news)
             {
-                $text .= '<strong><span><a href=' . 'full/' . $i . '>' . $news['title'] . '</a></span></strong><br/>';
+                $text .= '<strong><span><a href=' . 'full/' . $id . '>' . $news['title'] . '</a></span></strong><br/>';
 
                 $clearStr .= $cloud->filterStr($news['title']) . ' ';
 
@@ -153,7 +155,7 @@ class RssController extends Controller
                 $news->setSource($source);
                 $em->persist($news);
 
-                $i++;
+                $id++;
             }
         }
 
@@ -167,13 +169,16 @@ class RssController extends Controller
 
     /**
     * @Template()
+    * A function for viewing full description selected news by title-link
+    * @param integer $id the id of the news
+    * @return array
     */
     public function fullAction($id)
     {
         $text = '</br>';
 
         $news = $this->getDoctrine()
-            ->getRepository('AcmeRssBundle:News')
+            ->getRepository($this->tableNews)
             ->find($id);
 
         $text .= '<strong><span id="rssTitle">' . $news->getTitle() . '</span></strong><br/><div id="rssPost">' . $news->getContent() . '</div><br/>';
@@ -184,15 +189,18 @@ class RssController extends Controller
 
     /**
      * @Template()
+     * A function for viewing filtered news by tag from cloud tags
+     * @param string $param selected tag from cloud tags
+     * @return array
      */
     public function filterAction($param)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $news = $em->getRepository("AcmeRssBundle:News")->createQueryBuilder('o')
-            ->orWhere('o.title LIKE :filter1')
-            ->orWhere('o.title LIKE :filter2')
-            ->orWhere('o.title LIKE :filter3')
+        $news = $em->getRepository($this->tableNews)->createQueryBuilder('n')
+            ->orWhere('n.title LIKE :filter1')
+            ->orWhere('n.title LIKE :filter2')
+            ->orWhere('n.title LIKE :filter3')
             ->setParameter('filter1', $param . ' %')
             ->setParameter('filter2', '% ' . $param)
             ->setParameter('filter3', '% ' . $param . ' %')
@@ -212,8 +220,9 @@ class RssController extends Controller
 
     /**
      * @Template()
-     *
-     * Add new source
+     * A function for adding a new source
+     * @param Request $request the data of client's request
+     * @return array|RedirectResponse
      */
     public function addAction(Request $request)
     {
@@ -247,8 +256,9 @@ class RssController extends Controller
 
     /**
      * @Template()
-     *
-     * Edit selected source
+     * A function for editing a selected source by user
+     * @param Request $request the data of client's request
+     * @return array|RedirectResponse
      */
     public function editAction(Request $request)
     {
@@ -260,7 +270,7 @@ class RssController extends Controller
 
             if (isset($editId))
             {
-                $source = $em->getRepository('AcmeRssBundle:Source')
+                $source = $em->getRepository($this->tableSource)
                     ->find($editId);
 
                 $element['name'] = $source->getName();
@@ -278,7 +288,7 @@ class RssController extends Controller
                 $editUrl = $postData['fieldUrl'];
                 $editId = $postData['fieldSourceId'];
 
-                $source = $em->getRepository('AcmeRssBundle:Source')
+                $source = $em->getRepository($this->tableSource)
                     ->find($editId);
                 $source->setName($editName);
                 $source->setUrl($editUrl);
@@ -295,8 +305,9 @@ class RssController extends Controller
 
     /**
      * @Template()
-     *
-     * View all sources with edit/delete functions
+     * A function for viewing all sources and controlled them
+     * @param Request $request the data of client's request
+     * @return array|RedirectResponse
      */
     public function viewAction(Request $request)
     {
@@ -304,24 +315,13 @@ class RssController extends Controller
 
         if($request->isXmlHttpRequest())
         {
-            $editId = $request->request->get('editId');
-
-            if (isset($editId))
-            {
-                $source = $em->getRepository('AcmeRssBundle:Source')->find($editId);
-
-                $response = new Response(json_encode(array('name' => $source->getName(), 'url' => $source->getUrl())));
-                $response->headers->set('Content-Type', 'application/json');
-                return $response;
-            }
-
             $arrDeleteInd = (array)json_decode($request->request->get('arrDeleteInd'));
 
             if (count($arrDeleteInd))
             {
                 foreach($arrDeleteInd as $deleteId)
                 {
-                    $source = $em->getRepository('AcmeRssBundle:Source')
+                    $source = $em->getRepository($this->tableSource)
                         ->find($deleteId);
 
                     $em->remove($source);
@@ -338,9 +338,7 @@ class RssController extends Controller
 
             if (count($arrSaveInd) && ($arrSaveInd[0] != -1))
             {
-                apc_clear_cache("user");
-
-                $sources = $em->getRepository('AcmeRssBundle:Source')
+                $sources = $em->getRepository($this->tableSource)
                     ->findAll();
 
                 foreach($sources as $source)
@@ -373,7 +371,7 @@ class RssController extends Controller
             }
             else if (count($arrSaveInd) && ($arrSaveInd[0] == -1))
             {
-                $sources = $em->getRepository('AcmeRssBundle:Source')
+                $sources = $em->getRepository($this->tableSource)
                     ->findAll();
 
                 foreach($sources as $source)
@@ -393,7 +391,7 @@ class RssController extends Controller
 
             if (isset($loadActive))
             {
-                $sources = $em->getRepository('AcmeRssBundle:Source')
+                $sources = $em->getRepository($this->tableSource)
                     ->findByActive(1);
 
                 $arrLoadActive = array();
@@ -413,7 +411,7 @@ class RssController extends Controller
         $formView = $this->createForm(new ViewForm());
         $formView->handleRequest($request);
 
-        $sources = $em->getRepository('AcmeRssBundle:Source')
+        $sources = $em->getRepository($this->tableSource)
             ->findAll();
 
         return array('count' => count($sources), 'sources' => $sources, 'formView' => $formView->createView());
